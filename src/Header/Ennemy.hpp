@@ -5,18 +5,17 @@
 // Position and speed 
 #include "Vector2D.hpp" 
 
+
+
+
+
+
 class Ennemy {
     public: 
     int pv;
     Vector2D velocity;
     bool alive;
     Vector2D pos;
-
-
-
-
-
-
 
 
 
@@ -46,6 +45,9 @@ class Ennemy {
 
 
 
+
+
+
 class EnnemyPool {
     private:
     vector<Ennemy> pool;
@@ -55,16 +57,11 @@ class EnnemyPool {
     public:
     EnnemyPool(int size);
 
-
-
-
-
-    ////// EN STAND BY CONSTRUCTIO EN COURS //////
-
-        // Récupère un pointeur vers un ennemi libre (inactif)
+    // add ennemy
     Ennemy* acquireEnnemy();
-    
-    // Accesseur pour obtenir le pool (utile pour faire les boucles d'update/draw)
+
+
+    // get all the ennemies
     std::vector<Ennemy>& getPool();
 };
-#endif // ENNEMY_HPP
+#endif
