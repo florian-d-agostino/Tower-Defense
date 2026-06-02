@@ -1,6 +1,8 @@
 #include <iostream>
 #include "../../Header/Projectile.hpp"
-
+#include "../../Header/Ennemy.hpp"
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
@@ -25,12 +27,24 @@ void Projectile::UpdatePos(float deltaTime) {
     
     pos.x += velocity.x * deltaTime;
     pos.y += velocity.y * deltaTime;
+    
+    sprite.setPosition(pos.x, pos.y);
 
-    cout << "pos = [" << pos.x << ", " << pos.y << "]" << endl;
+    if (target != nullptr && target->alive) {
+        float dx = target->pos.x - pos.x;
+        float dy = target->pos.y - pos.y;
+        float distance = std::sqrt(dx*dx + dy*dy);
+        
+        if (distance < 10.0f) {
+            target->takeDamage(damage);    
+            Deactivate(); 
+        }
+    }
 }
 
-void Projectile::Draw() {
+void Projectile::Draw(sf::RenderWindow& window) {
     if (IsActive) {
+        window.draw(sprite);
     }
 }
 
@@ -43,8 +57,5 @@ void Projectile::Activate(int damage, Vector2D startPos, Vector2D startVelocity,
 }
 
 void Projectile::Deactivate() {
-    if (pos.x == target->pos.x && pos.y == target->pos.y ) {
-        target->takedamage(this.damage);    
-        this->IsActive = false;
-    }
+    IsActive = false;
 }
