@@ -13,6 +13,7 @@ Ennemy::Ennemy() {
     pos = {0.0f, 0.0f};
     velocity = {0.0f, 0.0f};
     alive = false;
+    currentWaypointIndex = 0;
 }
 
 
