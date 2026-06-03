@@ -1,16 +1,18 @@
 #include "../../Header/Ennemy.hpp"
 
-#include <iostream>
-
-
-
-using namespace std;
-
-
-void acquireProjectile(Projectile* projectile){ 
-    return;
+EnnemyPool::EnnemyPool(int size) : poolSize(size) {
+    pool.resize(size);
 }
 
-void initialte(Poolsize) {
-    return;
-} 
+Ennemy* EnnemyPool::acquireEnnemy() {
+    for (int i = 0; i < poolSize; ++i) {
+        if (!pool[i].alive) {
+            return &pool[i];
+        }
+    }
+    return nullptr;
+}
+
+std::vector<Ennemy>& EnnemyPool::getPool() {
+    return pool;
+}

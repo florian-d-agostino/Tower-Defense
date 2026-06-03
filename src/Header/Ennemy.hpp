@@ -16,6 +16,7 @@ class Ennemy {
     Vector2D velocity;
     bool alive;
     Vector2D pos;
+    int currentWaypointIndex;
 
 
 
@@ -41,7 +42,7 @@ class Ennemy {
 
     // Draw
     void draw();
-}
+};
 
 
 
@@ -50,7 +51,7 @@ class Ennemy {
 
 class EnnemyPool {
     private:
-    vector<Ennemy> pool;
+    std::vector<Ennemy> pool;
     int poolSize;
 
 
