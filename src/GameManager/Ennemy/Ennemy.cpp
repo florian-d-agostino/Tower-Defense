@@ -9,7 +9,7 @@ using namespace std;
 
 // Init ennemy
 Ennemy::Ennemy() {
-    pv = 100;
+    hp = 100;
     pos = {0.0f, 0.0f};
     velocity = {0.0f, 0.0f};
     alive = false;
@@ -22,7 +22,7 @@ Ennemy::Ennemy() {
 // Spawn ennemy ----- Stand By pas fini !----
 void Ennemy::spawn(Vector2D startPos){
     pos = startPos;
-    pv = 100;
+    hp = 100;
     velocity = {1.0f, 0.0f};
     alive = true;
 }
@@ -30,10 +30,10 @@ void Ennemy::spawn(Vector2D startPos){
 
 
 // Update position
-void Ennemy::updatePos(){
+void Ennemy::updatePos(float deltaTime){
     if (!alive) return;
-    pos.x += velocity.x;
-    pos.y += velocity.y;
+    pos.x += velocity.x * deltaTime;
+    pos.y += velocity.y * deltaTime;
 }
 
 
@@ -43,8 +43,8 @@ void Ennemy::updatePos(){
 void Ennemy::takeDamage(int damage) {
     if (!alive) return;
 
-    pv -= damage;
-    if (pv <= 0) {
+    hp -= damage;
+    if (hp <= 0) {
         death();
     }
 }
@@ -54,11 +54,11 @@ void Ennemy::takeDamage(int damage) {
 // Death
 void Ennemy::death() {
     alive = false;
-    cout << "Ennemy mort !" << endl;
+    cout << "Enemy died!" << endl;
 }
 
 
-void Ennemy::draw(){
+void Ennemy::draw(sf::RenderWindow& window){
     if (!alive) return;
     
 }

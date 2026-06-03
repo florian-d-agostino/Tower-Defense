@@ -14,6 +14,7 @@ public:
     Vector2D velocity;
     Ennemy* target; // Pointeur vers l'ennemi visé
     bool IsActive;
+    float lifetime; // Temps écoulé depuis l'activation (pour éviter les fuites)
     
     // Le sprite qui sera affiché
     sf::Sprite sprite;

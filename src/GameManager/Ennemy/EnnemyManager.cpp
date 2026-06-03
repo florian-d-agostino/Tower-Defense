@@ -59,36 +59,12 @@ void EnnemyManager::update(float deltaTime) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Update active ennemy
     std::vector<Ennemy>& enemies = pool.getPool();
     for (size_t i = 0; i < enemies.size(); ++i) {
         Ennemy& enemy = enemies[i];
         if (enemy.alive) {
-            enemy.updatePos();
+            enemy.updatePos(deltaTime);
 
             // Check if we reached the next waypoint
             int nextWaypointIndex = enemy.currentWaypointIndex + 1;
@@ -97,7 +73,8 @@ void EnnemyManager::update(float deltaTime) {
                 float speed = enemy.velocity.length();
 
                 // If close enough to the waypoint, snap to it and direct to the next waypoint
-                if (dist <= speed || dist < 0.1f) {
+                float movementThisFrame = speed * deltaTime;
+                if (dist <= movementThisFrame || dist < 0.1f) {
                     enemy.pos = path[nextWaypointIndex];
                     enemy.currentWaypointIndex = nextWaypointIndex;
 
@@ -121,11 +98,11 @@ void EnnemyManager::update(float deltaTime) {
     }
 }
 
-void EnnemyManager::draw() {
+void EnnemyManager::draw(sf::RenderWindow& window) {
     std::vector<Ennemy>& enemies = pool.getPool();
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].alive) {
-            enemies[i].draw();
+            enemies[i].draw(window);
         }
     }
 }

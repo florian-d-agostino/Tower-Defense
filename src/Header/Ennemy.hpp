@@ -5,62 +5,50 @@
 // Position and speed 
 #include "Vector2D.hpp" 
 
-
-
-
-
+// Forward declaration of SFML RenderWindow to keep header clean
+namespace sf {
+    class RenderWindow;
+}
 
 class Ennemy {
     public: 
-    int pv;
+    int hp;
     Vector2D velocity;
     bool alive;
     Vector2D pos;
     int currentWaypointIndex;
 
-
+    // Standby: sprite pour implémentation future
+    // sf::Sprite sprite;
 
     // Constructor
     Ennemy();
 
-
     // Spawn ennemy
     void spawn(Vector2D startPos);
 
-
     // Update position
-    void updatePos();
+    void updatePos(float deltaTime);
 
-
-    // Take damage;
+    // Take damage
     void takeDamage(int damage);
 
-
-    // Deat
+    // Death
     void death();
 
-
     // Draw
-    void draw();
+    void draw(sf::RenderWindow& window);
 };
-
-
-
-
-
 
 class EnnemyPool {
     private:
     std::vector<Ennemy> pool;
-    int poolSize;
-
 
     public:
     EnnemyPool(int size);
 
     // add ennemy
     Ennemy* acquireEnnemy();
-
 
     // get all the ennemies
     std::vector<Ennemy>& getPool();

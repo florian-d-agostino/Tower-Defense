@@ -5,6 +5,11 @@
 #include "Vector2D.hpp"
 #include <vector>
 
+// Forward declaration of SFML RenderWindow
+namespace sf {
+    class RenderWindow;
+}
+
 class EnnemyManager {
 private:
     EnnemyPool pool;
@@ -31,7 +36,7 @@ public:
     void update(float deltaTime);
 
     // Render all active enemies
-    void draw();
+    void draw(sf::RenderWindow& window);
 
     // Get list of active enemies (useful for tower targeting)
     std::vector<Ennemy*> getActiveEnnemies();
