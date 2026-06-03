@@ -1,43 +1,38 @@
 #include "../../Header/ProjectilePool.hpp"
-#include <iostream>
 
-using namespace std;
-
+// Constructeur : initialise la pool avec un certain nombre de projectiles inactifs
 ProjectilePool::ProjectilePool(int size) {
-    // 1. On charge la texture UNE SEULE FOIS pour tout le jeu
-    if (!projectileTexture.loadFromFile("../Sprite/Projectile.png")) {
-        cout << "Erreur de chargement de la texture Projectile.png" << endl;
-    }
-
-    // 2. On remplit la pool avec des projectiles inactifs
     pool.resize(size);
-    for (int i = 0; i < size; i++) {
-        // On donne la texture chargée au sprite de chaque projectile
-        pool[i].sprite.setTexture(projectileTexture);
+    for (int i = 0; i < size; ++i) {
+        pool[i].Deactivate();
     }
 }
 
+// Cherche un projectile inactif dans la pool et renvoie un pointeur vers lui
+// (Renvoie nullptr si tous les projectiles sont déjà actifs)
 Projectile* ProjectilePool::acquireProjectile() {
-    for (int i = 0; i < pool.size(); i++) {
-        if (!pool[i].IsActive) {
-            return &pool[i];
+    for (auto& projectile : pool) {
+        if (!projectile.IsActive) {
+            return &projectile;
         }
     }
-    return nullptr; // Plus de projectiles dispos !
+    return nullptr;
 }
 
+// Met à jour la physique et les collisions de tous les projectiles qui sont en train de voler
 void ProjectilePool::UpdateAll(float deltaTime) {
-    for (int i = 0; i < pool.size(); i++) {
-        if (pool[i].IsActive) {
-            pool[i].UpdatePos(deltaTime);
+    for (auto& projectile : pool) {
+        if (projectile.IsActive) {
+            projectile.UpdatePos(deltaTime);
         }
     }
 }
 
+// Affiche tous les projectiles en vol à l'écran
 void ProjectilePool::DrawAll(sf::RenderWindow& window) {
-    for (int i = 0; i < pool.size(); i++) {
-        if (pool[i].IsActive) {
-            pool[i].Draw(window);
+    for (auto& projectile : pool) {
+        if (projectile.IsActive) {
+            projectile.Draw(window);
         }
     }
 }
