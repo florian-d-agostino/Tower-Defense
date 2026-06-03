@@ -46,4 +46,4 @@ struct Vector2D {
     }
 };
 
-#endif // VECTOR2D_HPP
+#endif // VECTOR2D_HPP 
