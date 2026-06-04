@@ -12,7 +12,7 @@ static sf::Color lerpColor(sf::Color normal, sf::Color hover, float t) {
 }
 
 Button::Button(const sf::Font& font, const std::string& label, sf::Vector2f position, sf::Vector2f size)
-    : m_text(font, label), m_isHovered(false), m_hoverProgress(0.0f) 
+    : m_text(font, label), m_sprite(nullptr), m_hasIcon(false), m_isHovered(false), m_hoverProgress(0.0f) 
 {
     // Define color presets
     m_normalFill = sf::Color(19, 19, 38, 100);
@@ -47,6 +47,18 @@ void Button::setSize(sf::Vector2f size, unsigned int charSize) {
     sf::FloatRect textBounds = m_text.getLocalBounds();
     m_text.setOrigin({textBounds.position.x + textBounds.size.x / 2.f, textBounds.position.y + textBounds.size.y / 2.f});
     m_text.setPosition({m_shape.getPosition().x + size.x / 2.f, m_shape.getPosition().y + size.y / 2.f});
+
+    // Update sprite scale and position if icon is active
+    if (m_hasIcon && m_sprite) {
+        sf::FloatRect spriteBounds = m_sprite->getLocalBounds();
+        m_sprite->setOrigin({spriteBounds.position.x + spriteBounds.size.x / 2.f, spriteBounds.position.y + spriteBounds.size.y / 2.f});
+
+        float targetHeight = size.y * 0.6f;
+        float scaleFactor = targetHeight / spriteBounds.size.y;
+        m_sprite->setScale({scaleFactor, scaleFactor});
+
+        m_sprite->setPosition({m_shape.getPosition().x + size.x / 2.f, m_shape.getPosition().y + size.y / 2.f});
+    }
 }
 
 void Button::setPosition(sf::Vector2f position) {
@@ -56,6 +68,36 @@ void Button::setPosition(sf::Vector2f position) {
     sf::FloatRect textBounds = m_text.getLocalBounds();
     m_text.setOrigin({textBounds.position.x + textBounds.size.x / 2.f, textBounds.position.y + textBounds.size.y / 2.f});
     m_text.setPosition({position.x + m_shape.getSize().x / 2.f, position.y + m_shape.getSize().y / 2.f});
+
+    // Recenter sprite if icon is active
+    if (m_hasIcon && m_sprite) {
+        m_sprite->setPosition({position.x + m_shape.getSize().x / 2.f, position.y + m_shape.getSize().y / 2.f});
+    }
+}
+
+void Button::setLabel(const std::string& label) {
+    m_hasIcon = false;
+    m_text.setString(label);
+    
+    // Recenter text inside button shape
+    sf::FloatRect textBounds = m_text.getLocalBounds();
+    m_text.setOrigin({textBounds.position.x + textBounds.size.x / 2.f, textBounds.position.y + textBounds.size.y / 2.f});
+    m_text.setPosition({m_shape.getPosition().x + m_shape.getSize().x / 2.f, m_shape.getPosition().y + m_shape.getSize().y / 2.f});
+}
+
+void Button::setIcon(const sf::Texture& texture) {
+    m_sprite = std::make_unique<sf::Sprite>(texture);
+    m_hasIcon = true;
+
+    // Center and scale the sprite inside the button
+    sf::FloatRect spriteBounds = m_sprite->getLocalBounds();
+    m_sprite->setOrigin({spriteBounds.position.x + spriteBounds.size.x / 2.f, spriteBounds.position.y + spriteBounds.size.y / 2.f});
+
+    float targetHeight = m_shape.getSize().y * 0.6f;
+    float scaleFactor = targetHeight / spriteBounds.size.y;
+    m_sprite->setScale({scaleFactor, scaleFactor});
+
+    m_sprite->setPosition({m_shape.getPosition().x + m_shape.getSize().x / 2.f, m_shape.getPosition().y + m_shape.getSize().y / 2.f});
 }
 
 void Button::update(sf::Vector2f mousePos, float deltaTime) {
@@ -71,12 +113,21 @@ void Button::update(sf::Vector2f mousePos, float deltaTime) {
     // Apply color values based on interpolation
     m_shape.setFillColor(lerpColor(m_normalFill, m_hoverFill, m_hoverProgress));
     m_shape.setOutlineColor(lerpColor(m_normalOutline, m_hoverOutline, m_hoverProgress));
-    m_text.setFillColor(lerpColor(m_normalText, m_hoverText, m_hoverProgress));
+    
+    if (m_hasIcon && m_sprite) {
+        m_sprite->setColor(lerpColor(m_normalText, m_hoverText, m_hoverProgress));
+    } else {
+        m_text.setFillColor(lerpColor(m_normalText, m_hoverText, m_hoverProgress));
+    }
 }
 
 void Button::draw(sf::RenderWindow& window) const {
     window.draw(m_shape);
-    window.draw(m_text);
+    if (m_hasIcon && m_sprite) {
+        window.draw(*m_sprite);
+    } else {
+        window.draw(m_text);
+    }
 }
 
 bool Button::isClicked(sf::Vector2f mousePos) const {

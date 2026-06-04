@@ -30,6 +30,10 @@ private:
     std::unique_ptr<Button> m_rulesBtn;
     std::unique_ptr<Button> m_exitBtn;
     std::unique_ptr<Button> m_backBtn;
+    std::unique_ptr<Button> m_soundBtn;
+
+    sf::Texture m_soundOnTex;
+    sf::Texture m_soundOffTex;
 
     // Repositions and scales all components dynamically
     void positionElements(sf::Vector2f windowSize);

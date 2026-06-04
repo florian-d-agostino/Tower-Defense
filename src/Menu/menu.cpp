@@ -1,6 +1,28 @@
 #include "../Header/Menu.hpp"
+#include "../SoundManager/SoundManager.hpp"
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+
+// Helper function to load a texture and normalize all non-transparent pixels to solid white
+static void loadAndNormalizeTexture(sf::Texture& texture, const std::string& filepath) {
+    sf::Image img;
+    if (img.loadFromFile(filepath)) {
+        sf::Vector2u size = img.getSize();
+        for (unsigned int y = 0; y < size.y; ++y) {
+            for (unsigned int x = 0; x < size.x; ++x) {
+                sf::Color color = img.getPixel({x, y});
+                if (color.a > 0) {
+                    // Repaint to solid white while preserving smooth anti-aliased alpha borders
+                    img.setPixel({x, y}, sf::Color(255, 255, 255, color.a));
+                }
+            }
+        }
+        texture.loadFromImage(img);
+    } else {
+        std::cerr << "Warning: Could not load icon image file: " << filepath << std::endl;
+    }
+}
 
 Menu::Menu(sf::Vector2f windowSize)
     : m_state(MenuState::MainMenu),
@@ -23,11 +45,19 @@ Menu::Menu(sf::Vector2f windowSize)
         "4. Survivez a toutes les vagues pour gagner !"
     );
 
+    // Load and normalize sound icons (filenames: off = speaker playing waves, on = speaker with X)
+    loadAndNormalizeTexture(m_soundOnTex, "data/icons/icon_speak_off.png");
+    loadAndNormalizeTexture(m_soundOffTex, "data/icons/icon_speak_on.png");
+
     // Instantiate buttons with dummy configurations initially
     m_playBtn = std::make_unique<Button>(m_font, "Jouer", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
     m_rulesBtn = std::make_unique<Button>(m_font, "Regles", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
     m_exitBtn = std::make_unique<Button>(m_font, "Quitter", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
     m_backBtn = std::make_unique<Button>(m_font, "Retour", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
+    m_soundBtn = std::make_unique<Button>(m_font, "", sf::Vector2f(0.f, 0.f), sf::Vector2f(44.f, 44.f));
+
+    // Bind texture to the sound toggle button
+    m_soundBtn->setIcon(m_soundOnTex);
 
     // Place and size all menu items
     positionElements(windowSize);
@@ -56,7 +86,7 @@ void Menu::positionElements(sf::Vector2f windowSize) {
     m_rulesText.setOrigin({rulesBounds.position.x + rulesBounds.size.x / 2.f, rulesBounds.position.y + rulesBounds.size.y / 2.f});
     m_rulesText.setPosition({windowSize.x / 2.f, windowSize.y * 0.42f});
 
-    // Determine scaled dimensions for buttons
+    // Determine scaled dimensions for standard text buttons
     sf::Vector2f btnSize(200.f * scale, 50.f * scale);
     unsigned int btnCharSize = static_cast<unsigned int>(22.f * scale);
 
@@ -70,6 +100,11 @@ void Menu::positionElements(sf::Vector2f windowSize) {
     m_rulesBtn->setPosition(sf::Vector2f(windowSize.x / 2.f - btnSize.x / 2.f, windowSize.y * 0.48f));
     m_exitBtn->setPosition(sf::Vector2f(windowSize.x / 2.f - btnSize.x / 2.f, windowSize.y * 0.58f));
     m_backBtn->setPosition(sf::Vector2f(windowSize.x / 2.f - btnSize.x / 2.f, windowSize.y * 0.7f));
+
+    // Place sound button in the top right corner
+    sf::Vector2f soundBtnSize(44.f * scale, 44.f * scale);
+    m_soundBtn->setSize(soundBtnSize, 0);
+    m_soundBtn->setPosition(sf::Vector2f(windowSize.x - soundBtnSize.x - 20.f * scale, 20.f * scale));
 }
 
 void Menu::handleEvents(sf::RenderWindow& window) {
@@ -91,6 +126,17 @@ void Menu::handleEvents(sf::RenderWindow& window) {
         if (const auto* press = event->getIf<sf::Event::MouseButtonPressed>()) {
             if (press->button == sf::Mouse::Button::Left) {
                 sf::Vector2f mappedMousePos = window.mapPixelToCoords(press->position);
+
+                // Sound toggle button click check (available globally on all menu screens)
+                if (m_soundBtn->isClicked(mappedMousePos)) {
+                    SoundManager::getInstance().toggleMute();
+                    if (SoundManager::getInstance().isMuted()) {
+                        m_soundBtn->setIcon(m_soundOffTex);
+                    } else {
+                        m_soundBtn->setIcon(m_soundOnTex);
+                    }
+                }
+
                 if (m_state == MenuState::MainMenu) {
                     if (m_playBtn->isClicked(mappedMousePos)) {
                         m_state = MenuState::Playing;
@@ -110,6 +156,12 @@ void Menu::handleEvents(sf::RenderWindow& window) {
 }
 
 void Menu::update(sf::Vector2f mousePos, float deltaTime, sf::Vector2f windowSize) {
+    // Recycles finished audio channels
+    SoundManager::getInstance().update();
+
+    // Update global buttons
+    m_soundBtn->update(mousePos, deltaTime);
+
     // Update button states depending on current menu state
     if (m_state == MenuState::MainMenu) {
         m_playBtn->update(mousePos, deltaTime);
@@ -123,6 +175,9 @@ void Menu::update(sf::Vector2f mousePos, float deltaTime, sf::Vector2f windowSiz
 void Menu::draw(sf::RenderWindow& window) {
     // Clear screen to deep blue color
     window.clear(sf::Color(10, 10, 25));
+
+    // Draw sound toggle button
+    m_soundBtn->draw(window);
 
     // Render active UI elements depending on state
     if (m_state == MenuState::MainMenu) {

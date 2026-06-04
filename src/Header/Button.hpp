@@ -3,12 +3,15 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <memory>
 
 // Represents an interactive, styled UI button
 class Button {
 private:
     sf::RectangleShape m_shape;
     sf::Text m_text;
+    std::unique_ptr<sf::Sprite> m_sprite;
+    bool m_hasIcon;
     bool m_isHovered;
     float m_hoverProgress; // Tracks hover transition progress (0.0 to 1.0)
 
@@ -26,6 +29,8 @@ public:
     // Dynamic layout/scaling management
     void setSize(sf::Vector2f size, unsigned int charSize);
     void setPosition(sf::Vector2f position);
+    void setLabel(const std::string& label);
+    void setIcon(const sf::Texture& texture);
     
     // Logic, render and interaction
     void update(sf::Vector2f mousePos, float deltaTime);
