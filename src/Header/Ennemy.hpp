@@ -5,7 +5,6 @@
 // Position and speed 
 #include "Vector2D.hpp" 
 
-// Forward declaration of SFML RenderWindow to keep header clean
 namespace sf {
     class RenderWindow;
 }
@@ -24,19 +23,15 @@ class Ennemy {
     // Constructor
     Ennemy();
 
-    // Spawn ennemy
+    
     void spawn(Vector2D startPos);
-
-    // Update position
+    
     void updatePos(float deltaTime);
-
-    // Take damage
+    
     void takeDamage(int damage);
-
-    // Death
+    
     void death();
-
-    // Draw
+    
     void draw(sf::RenderWindow& window);
 };
 

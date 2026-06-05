@@ -4,6 +4,7 @@
 #include "Vector2D.hpp"
 #include <cmath>
 #include <SFML/Graphics.hpp>
+#include <optional>
 
 class Ennemy; // Forward declaration pour éviter les inclusions circulaires
 
@@ -17,7 +18,7 @@ public:
     float lifetime; // Temps écoulé depuis l'activation (pour éviter les fuites)
     
     // Le sprite qui sera affiché
-    sf::Sprite sprite;
+    std::optional<sf::Sprite> sprite;
 
     Projectile();
     Projectile(int damage, Vector2D pos, Vector2D velocity, Ennemy* target, bool IsActive);

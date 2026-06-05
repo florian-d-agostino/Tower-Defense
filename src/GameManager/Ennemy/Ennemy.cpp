@@ -1,5 +1,7 @@
 #include "../../Header/Ennemy.hpp"
+#include "../../Header/GameManager.hpp"
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
@@ -45,6 +47,9 @@ void Ennemy::takeDamage(int damage) {
 
     hp -= damage;
     if (hp <= 0) {
+        if (g_gameManager != nullptr) {
+            g_gameManager->addGold(15);
+        }
         death();
     }
 }
@@ -60,5 +65,9 @@ void Ennemy::death() {
 
 void Ennemy::draw(sf::RenderWindow& window){
     if (!alive) return;
-    
+    sf::CircleShape shape(8.f);
+    shape.setFillColor(sf::Color::Red);
+    shape.setOrigin({8.f, 8.f});
+    shape.setPosition(sf::Vector2f(pos.x, pos.y));
+    window.draw(shape);
 }

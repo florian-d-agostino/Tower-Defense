@@ -2,19 +2,19 @@
 #include <iostream>
 
 
+using namespace std;
 
-
-EnnemyManager::EnnemyManager(int poolSize) 
-    : pool(poolSize), 
+EnnemyManager::EnnemyManager(int poolSize): 
+    pool(poolSize), 
     enemiesToSpawn(0), 
     spawnTimer(0.0f), 
     spawnInterval(1.0f), 
-    enemySpeed(2.0f), 
+    enemySpeed(100.0f), 
     spawnPos(0.0f, 0.0f) {}
 
 
 
-void EnnemyManager::setPath(const std::vector<Vector2D>& newPath) {
+void EnnemyManager::setPath(const vector<Vector2D>& newPath) {
     path = newPath;
 }
 
@@ -25,12 +25,17 @@ void EnnemyManager::spawn(int amount, Vector2D pos) {
     spawnPos = pos;
 
 
-    // Set spawnTimer to spawnInterval so the first enemy spawns immediately on the next update
+
+    // Spawn Timer
     spawnTimer = spawnInterval;
-    std::cout << "Wave started: spawning " << amount << " enemies at position (" << pos.x << ", " << pos.y << ")" << std::endl;
+    cout << "Wave started: spawning " << amount << " enemies at position (" << pos.x << ", " << pos.y << ")" << endl;
 }
 
+
+
+// Position ennemies update
 void EnnemyManager::update(float deltaTime) {
+
 
 
     // Wave Logic
@@ -41,15 +46,18 @@ void EnnemyManager::update(float deltaTime) {
             if (enemy != nullptr) {
                 enemy->spawn(spawnPos);
                 enemy->currentWaypointIndex = 0;
-                
-                // If we have a path, direct the enemy to the first waypoint (index 1)
+
+
+                // Movement
                 if (path.size() > 1) {
                     Vector2D direction = (path[1] - path[0]).normalized();
                     enemy->velocity = direction * enemySpeed;
                 }
-                
-                std::cout << "Spawned enemy from pool! Remaining to spawn: " << (enemiesToSpawn - 1) << std::endl;
-                enemiesToSpawn--;
+
+
+                // Countdown to next spawn
+                cout << "Spawned enemy from pool! Remaining to spawn: " << (enemiesToSpawn - 1) << endl;
+                enemiesToSpawn -= 1;
                 spawnTimer = 0.0f;
             }
         }
@@ -57,41 +65,49 @@ void EnnemyManager::update(float deltaTime) {
 
 
 
-
-
     // Update active ennemy
-    std::vector<Ennemy>& enemies = pool.getPool();
+    vector<Ennemy>& enemies = pool.getPool();
     for (size_t i = 0; i < enemies.size(); ++i) {
         Ennemy& enemy = enemies[i];
         if (enemy.alive) {
             enemy.updatePos(deltaTime);
 
-            // Check if we reached the next waypoint
+
+
+            // Check next waypoint
             int nextWaypointIndex = enemy.currentWaypointIndex + 1;
             if (nextWaypointIndex < static_cast<int>(path.size())) {
                 float dist = enemy.pos.distance(path[nextWaypointIndex]);
                 float speed = enemy.velocity.length();
 
-                // If close enough to the waypoint, snap to it and direct to the next waypoint
+
+
+
+
+                // Ennemies speed update
                 float movementThisFrame = speed * deltaTime;
                 if (dist <= movementThisFrame || dist < 0.1f) {
                     enemy.pos = path[nextWaypointIndex];
                     enemy.currentWaypointIndex = nextWaypointIndex;
 
+
                     int targetWaypointIndex = nextWaypointIndex + 1;
                     if (targetWaypointIndex < static_cast<int>(path.size())) {
                         Vector2D direction = (path[targetWaypointIndex] - path[nextWaypointIndex]).normalized();
                         enemy.velocity = direction * speed;
-                        std::cout << "Enemy reached waypoint " << nextWaypointIndex << ", heading to " << targetWaypointIndex << std::endl;
+                        cout << "Enemy reached waypoint " << nextWaypointIndex << ", heading to " << targetWaypointIndex << endl;
                     } else {
-                        // Reached the end of the path!
-                        enemy.death(); // Sets alive = false
-                        std::cout << "An enemy reached the end of the path! Base took damage." << std::endl;
+
+
+                        // When Base is attacked
+                        enemy.death();
+                        cout << "An enemy attacked the base!" << endl;
+
+
                         // Future hook: GameManager::getInstance().takeDamage(1);
                     }
                 }
             } else {
-                // Out of waypoints, deactivate just in case
                 enemy.alive = false;
             }
         }
@@ -99,7 +115,7 @@ void EnnemyManager::update(float deltaTime) {
 }
 
 void EnnemyManager::draw(sf::RenderWindow& window) {
-    std::vector<Ennemy>& enemies = pool.getPool();
+    vector<Ennemy>& enemies = pool.getPool();
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].alive) {
             enemies[i].draw(window);
@@ -107,9 +123,9 @@ void EnnemyManager::draw(sf::RenderWindow& window) {
     }
 }
 
-std::vector<Ennemy*> EnnemyManager::getActiveEnnemies() {
-    std::vector<Ennemy*> activeEnnemies;
-    std::vector<Ennemy>& enemies = pool.getPool();
+vector<Ennemy*> EnnemyManager::getActiveEnnemies() {
+    vector<Ennemy*> activeEnnemies;
+    vector<Ennemy>& enemies = pool.getPool();
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].alive) {
             activeEnnemies.push_back(&enemies[i]);

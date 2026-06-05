@@ -40,3 +40,10 @@ cmake-build-release/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+
+libsfml-audio-3.dll
+libsfml-graphics-3.dll
+libsfml-window-3.dll
+libsfml-system-3.dll
+libsfml-network-3.dll

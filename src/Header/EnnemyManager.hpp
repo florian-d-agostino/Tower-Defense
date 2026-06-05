@@ -38,8 +38,8 @@ public:
     // Render all active enemies
     void draw(sf::RenderWindow& window);
 
-    // Get list of active enemies (useful for tower targeting)
+    // Get list of active enemies
     std::vector<Ennemy*> getActiveEnnemies();
 };
 
-#endif // ENNEMY_MANAGER_HPP
+#endif

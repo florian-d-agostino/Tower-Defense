@@ -45,7 +45,9 @@ void Projectile::UpdatePos(float deltaTime) {
     pos.x += velocity.x * deltaTime;
     pos.y += velocity.y * deltaTime;
     
-    sprite.setPosition(pos.x, pos.y);
+    if (sprite.has_value()) {
+        sprite->setPosition(sf::Vector2f(pos.x, pos.y));
+    }
 
     if (target != nullptr && target->alive) {
         float distance = pos.distance(target->pos);
@@ -57,8 +59,15 @@ void Projectile::UpdatePos(float deltaTime) {
 }
 
 void Projectile::Draw(sf::RenderWindow& window) {
-    if (IsActive) {
-        window.draw(sprite);
+    if (!IsActive) return;
+    if (sprite.has_value()) {
+        window.draw(*sprite);
+    } else {
+        sf::CircleShape bullet(4.f);
+        bullet.setFillColor(sf::Color::Yellow);
+        bullet.setOrigin({4.f, 4.f});
+        bullet.setPosition(sf::Vector2f(pos.x, pos.y));
+        window.draw(bullet);
     }
 }
 
