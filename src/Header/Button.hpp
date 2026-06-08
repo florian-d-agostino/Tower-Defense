@@ -4,15 +4,15 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-// Represents an interactive, styled UI button
+// button
 class Button {
 private:
     sf::RectangleShape m_shape;
     sf::Text m_text;
     bool m_isHovered;
-    float m_hoverProgress; // Tracks hover transition progress (0.0 to 1.0)
+    float m_hoverProgress;
 
-    // Style colors for normal and hover states
+    // button colors
     sf::Color m_normalFill;
     sf::Color m_hoverFill;
     sf::Color m_normalOutline;
@@ -23,11 +23,16 @@ private:
 public:
     Button(const sf::Font& font, const std::string& label, sf::Vector2f position, sf::Vector2f size);
 
-    // Dynamic layout/scaling management
+
+
+
+    // size and position
     void setSize(sf::Vector2f size, unsigned int charSize);
     void setPosition(sf::Vector2f position);
-    
-    // Logic, render and interaction
+
+
+
+    // methods
     void update(sf::Vector2f mousePos, float deltaTime);
     void draw(sf::RenderWindow& window) const;
     bool isClicked(sf::Vector2f mousePos) const;

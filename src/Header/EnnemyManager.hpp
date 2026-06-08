@@ -5,40 +5,45 @@
 #include "Vector2D.hpp"
 #include <vector>
 
-// Forward declaration of SFML RenderWindow
+// forward declaration
 namespace sf {
     class RenderWindow;
 }
+
+
 
 class EnnemyManager {
 private:
     EnnemyPool pool;
     std::vector<Vector2D> path;
     
-    // Wave spawning state
+    // wave state
     int enemiesToSpawn;
     float spawnTimer;
     float spawnInterval;
     float enemySpeed;
     Vector2D spawnPos;
 
+
+
+
 public:
-    // Constructor
+    // constructor
     EnnemyManager(int poolSize);
     
-    // Set the path that enemies should follow
+    // set path
     void setPath(const std::vector<Vector2D>& newPath);
     
-    // Start spawning a wave of enemies at the specified position
+    // spawn wave
     void spawn(int amount, Vector2D pos);
 
-    // Update all active enemies and wave spawning
+    // update
     void update(float deltaTime);
 
-    // Render all active enemies
+    // draw
     void draw(sf::RenderWindow& window);
 
-    // Get list of active enemies
+    // get active
     std::vector<Ennemy*> getActiveEnnemies();
 };
 

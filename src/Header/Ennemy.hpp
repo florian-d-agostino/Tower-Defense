@@ -2,12 +2,15 @@
 #define ENNEMY_HPP
 #include <vector>
 
-// Position and speed 
+// pos/speed 
 #include "Vector2D.hpp" 
 
 namespace sf {
     class RenderWindow;
 }
+
+
+
 
 class Ennemy {
     public: 
@@ -17,13 +20,18 @@ class Ennemy {
     Vector2D pos;
     int currentWaypointIndex;
 
-    // Standby: sprite pour implémentation future
+
+
+
+    // sprite (En attente)
     // sf::Sprite sprite;
+
+
 
     // Constructor
     Ennemy();
 
-    
+
     void spawn(Vector2D startPos);
     
     void updatePos(float deltaTime);
@@ -35,6 +43,8 @@ class Ennemy {
     void draw(sf::RenderWindow& window);
 };
 
+
+
 class EnnemyPool {
     private:
     std::vector<Ennemy> pool;
@@ -42,10 +52,10 @@ class EnnemyPool {
     public:
     EnnemyPool(int size);
 
-    // add ennemy
+    // add
     Ennemy* acquireEnnemy();
 
-    // get all the ennemies
+    // get pool
     std::vector<Ennemy>& getPool();
 };
 #endif

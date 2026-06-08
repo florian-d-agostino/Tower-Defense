@@ -7,7 +7,9 @@
 
 using namespace std;
 
-// Definition of the global pointer
+
+
+// Pointers
 GameManager* g_gameManager = nullptr;
 
 GameManager::GameManager() 
@@ -17,10 +19,13 @@ GameManager::GameManager()
     m_projectilePool(100),
     m_passiveGoldTimer(0.0f)
 {
-    g_gameManager = this; // Store reference to this active instance
+    g_gameManager = this;
     loadLevel("data/lvl/lvl1.json");
     m_ennemyManager.setPath(m_path);
 }
+
+
+
 
 bool GameManager::loadLevel(const std::string& filepath) {
     ifstream file(filepath);
@@ -29,13 +34,20 @@ bool GameManager::loadLevel(const std::string& filepath) {
         return false;
     }
 
-    // Read entire file content
+
+
+
+    // read file
     stringstream buffer;
     buffer << file.rdbuf();
     string content = buffer.str();
     file.close();
 
-    // 1. Parse map_name
+
+
+
+
+    // map name
     size_t namePos = content.find("\"map_name\"");
     if (namePos != string::npos) {
         size_t startQuote = content.find("\"", namePos + 10);
@@ -45,38 +57,53 @@ bool GameManager::loadLevel(const std::string& filepath) {
         m_mapName = "Niveau Sans Nom";
     }
 
-    // 2. Parse paths (waypoints)
+
+
+
+    // paths
     m_path.clear();
     size_t pathPos = content.find("\"paths\"");
     size_t gridPos = content.find("\"grid\"");
     if (pathPos != string::npos && gridPos != string::npos) {
         size_t cur = pathPos;
         while ((cur = content.find("{\"x\"", cur)) != string::npos && cur < gridPos) {
-            // Find x value
+
+
+
+            // coord x
             cur = content.find(":", cur);
             int gx = stoi(content.substr(cur + 1));
-            
-            // Find y value
+
+
+            // coord y
             cur = content.find("\"y\"", cur);
             cur = content.find(":", cur);
             int gy = stoi(content.substr(cur + 1));
-            
-            // Convert grid (20x15) to pixels (1200x800)
-            // grid width = 20 -> cell_w = 60
-            // grid height = 15 -> cell_h = 53.333f
+
+
+
+
+            // grid to pixels
             float px = gx * 60.f + 30.f;
             float py = gy * 53.333f + 26.666f;
             m_path.push_back({px, py});
         }
     }
 
-    // 3. Parse grid
+
+
+
+
+    // grid
     m_grid.assign(15, vector<int>(20, 0));
     if (gridPos != string::npos) {
         size_t cur = content.find("[", gridPos);
         int row = 0;
         int col = 0;
-        // Skip the very first opening bracket of the 2D grid array
+
+
+
+        // grid reader
         if (cur != string::npos) cur++; 
         
         while (cur < content.size() && row < 15) {
@@ -99,45 +126,52 @@ bool GameManager::loadLevel(const std::string& filepath) {
     return true;
 }
 
+
+
+// Events
 void GameManager::handleEvents(sf::RenderWindow& window, Menu& menu) {
     while (const std::optional event = window.pollEvent()) {
-        // Handle window close
+
+
+        // close
         if (event->is<sf::Event::Closed>()) {
             menu.setState(MenuState::Exit);
             window.close();
         }
 
-        // Adjust view boundaries on window resize
-        if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-            sf::FloatRect visibleArea({0.f, 0.f}, {static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)});
-            window.setView(sf::View(visibleArea));
-        }
 
-        // Mouse button pressed events
+        // mouse click
         if (const auto* press = event->getIf<sf::Event::MouseButtonPressed>()) {
             if (press->button == sf::Mouse::Button::Left) {
                 sf::Vector2f mousePos = window.mapPixelToCoords(press->position);
                 int gx = static_cast<int>(mousePos.x / 60.f);
                 int gy = static_cast<int>(mousePos.y / 53.33f);
 
+
+
+
                 if (gx >= 0 && gx < 20 && gy >= 0 && gy < 15) {
                     if (m_grid[gy][gx] == 0 && m_gold >= 50) {
                         m_gold -= 50;
-                        m_grid[gy][gx] = 2; // Mark as occupied
+                        m_grid[gy][gx] = 2;
                         m_towers.push_back({sf::Vector2f(gx * 60.f + 30.f, gy * 53.33f + 26.66f)});
                     }
                 }
             }
         }
 
-        // Key pressed events
+
+
+
+        // keyboard spacebar
         if (const auto* keyPress = event->getIf<sf::Event::KeyPressed>()) {
             if (keyPress->code == sf::Keyboard::Key::Space) {
-                // Start a wave of 10 enemies
                 m_ennemyManager.spawn(10, m_path[0]);
             }
             else if (keyPress->code == sf::Keyboard::Key::Escape) {
-                // Exit gameplay and return to the main menu
+
+
+                // back to menu
                 menu.setState(MenuState::MainMenu);
             }
         }
@@ -145,13 +179,19 @@ void GameManager::handleEvents(sf::RenderWindow& window, Menu& menu) {
 }
 
 void GameManager::update(float deltaTime) {
-    // 1. Update enemies
+
+
+    // update enemies
     m_ennemyManager.update(deltaTime);
 
-    // 2. Update active projectiles
+
+
+    // update projectiles
     m_projectilePool.UpdateAll(deltaTime);
 
-    // 3. Update towers and handle shooting
+
+
+    // update towers and shooting
     vector<Ennemy*> activeEnnemies = m_ennemyManager.getActiveEnnemies();
     for (auto& tower : m_towers) {
         if (tower.fireTimer > 0.0f) {
@@ -159,36 +199,47 @@ void GameManager::update(float deltaTime) {
         }
 
         if (tower.fireTimer <= 0.0f) {
-            // Find the first enemy in range
+
+
+            // enemy in range
             Ennemy* target = nullptr;
             for (auto* enemy : activeEnnemies) {
                 Vector2D towerPos2D(tower.pos.x, tower.pos.y);
                 if (towerPos2D.distance(enemy->pos) <= tower.range) {
                     target = enemy;
-                    break; // Target found
+                    break;
                 }
             }
 
+
+
+
             if (target != nullptr) {
-                // Get a projectile from the pool
+
+                // get projectile
                 Projectile* proj = m_projectilePool.acquireProjectile();
+
+
                 if (proj != nullptr) {
-                    // Compute direction and velocity towards target
+                    // calculate speed
                     Vector2D towerPos2D(tower.pos.x, tower.pos.y);
                     Vector2D direction = (target->pos - towerPos2D).normalized();
-                    float bulletSpeed = 300.f; // Speed in pixels/second
+                    float bulletSpeed = 300.f;
                     Vector2D velocity = direction * bulletSpeed;
 
-                    // Shoot bullet (deals 25 damage)
+                    // shoot
                     proj->Activate(25, towerPos2D, velocity, target);
 
-                    // Reset tower cooldown
+                    // reset cooldown
                     tower.fireTimer = tower.fireCooldown;
                 }
             }
         }
     }
-    // 4. Passive gold generation (2 gold every 1 second)
+
+
+
+    // passive gold regen
     m_passiveGoldTimer += deltaTime;
     if (m_passiveGoldTimer >= 1.0f) {
         m_gold += 2;
@@ -196,6 +247,7 @@ void GameManager::update(float deltaTime) {
     }
 }
 
+// add gold when kill
 void GameManager::addGold(int amount) {
     m_gold += amount;
 }

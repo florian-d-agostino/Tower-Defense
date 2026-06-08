@@ -6,18 +6,23 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 
-class Ennemy; // Forward declaration pour éviter les inclusions circulaires
+class Ennemy; // forward declaration
 
 class Projectile {
 public:
     int damage;
     Vector2D pos;
     Vector2D velocity;
-    Ennemy* target; // Pointeur vers l'ennemi visé
+
+
+    // Target
+    Ennemy* target;
+
+
     bool IsActive;
-    float lifetime; // Temps écoulé depuis l'activation (pour éviter les fuites)
+    float lifetime;
     
-    // Le sprite qui sera affiché
+    // sprite
     std::optional<sf::Sprite> sprite;
 
     Projectile();
@@ -26,7 +31,7 @@ public:
     void UpdatePos(float deltaTime); 
     void Draw(sf::RenderWindow& window);
     
-    // Méthode pour "recycler" le projectile sorti de la pool
+    // methods
     void Activate(int damage, Vector2D startPos, Vector2D startVelocity, Ennemy* target);
     void Deactivate();
 };

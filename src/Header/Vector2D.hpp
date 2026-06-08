@@ -1,42 +1,48 @@
 #ifndef VECTOR2D_HPP
 #define VECTOR2D_HPP
 
+
+
+
 #include <cmath>
 
 struct Vector2D {
     float x;
     float y;
 
-    // Constructors
+
+
+
+    // constructors
     Vector2D() : x(0.0f), y(0.0f) {}
     Vector2D(float x, float y) : x(x), y(y) {}
 
-    // Vector addition
+    // addition
     Vector2D operator+(const Vector2D& other) const {
         return Vector2D(x + other.x, y + other.y);
     }
 
-    // Vector subtraction
+    // subtraction
     Vector2D operator-(const Vector2D& other) const {
         return Vector2D(x - other.x, y - other.y);
     }
 
-    // Scalar multiplication
+    // multiplication
     Vector2D operator*(float scalar) const {
         return Vector2D(x * scalar, y * scalar);
     }
 
-    // Length of the vector
+    // length
     float length() const {
         return std::sqrt(x * x + y * y);
     }
 
-    // Distance to another vector (point)
+    // distance
     float distance(const Vector2D& other) const {
         return (*this - other).length();
     }
 
-    // Normalize the vector (return unit vector)
+    // normalize
     Vector2D normalized() const {
         float len = length();
         if (len > 0.0f) {
@@ -46,4 +52,4 @@ struct Vector2D {
     }
 };
 
-#endif // VECTOR2D_HPP 
+#endif

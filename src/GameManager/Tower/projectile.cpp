@@ -33,7 +33,7 @@ void Projectile::UpdatePos(float deltaTime) {
         return;
     }
 
-    // Homing tracking: orient velocity towards target
+    // track target
     if (target != nullptr && target->alive) {
         Vector2D direction = (target->pos - pos).normalized();
         float speed = velocity.length();

@@ -4,13 +4,13 @@
 
 Menu::Menu(sf::Vector2f windowSize)
     : m_state(MenuState::MainMenu),
-      m_font("data/fonts/segoeui.ttf"),
-      m_boldFont("data/fonts/segoeuib.ttf"),
-      m_title(m_boldFont, "TOWER DEFENSE", 50),
-      m_titleShadow(m_boldFont, "TOWER DEFENSE", 50),
-      m_rulesText(m_font, "", 20)
+    m_font("data/fonts/segoeui.ttf"),
+    m_boldFont("data/fonts/segoeuib.ttf"),
+    m_title(m_boldFont, "TOWER DEFENSE", 50),
+    m_titleShadow(m_boldFont, "TOWER DEFENSE", 50),
+    m_rulesText(m_font, "", 20)
 {
-    // Configure visual appearance of titles and rules text
+    // text style
     m_title.setFillColor(sf::Color(0, 255, 200));
     m_titleShadow.setFillColor(sf::Color(128, 0, 128, 100));
 
@@ -23,27 +23,27 @@ Menu::Menu(sf::Vector2f windowSize)
         "4. Survivez a toutes les vagues pour gagner !"
     );
 
-    // Instantiate buttons with dummy configurations initially
+    // init buttons
     m_playBtn = std::make_unique<Button>(m_font, "Jouer", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
     m_rulesBtn = std::make_unique<Button>(m_font, "Regles", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
     m_exitBtn = std::make_unique<Button>(m_font, "Quitter", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
     m_backBtn = std::make_unique<Button>(m_font, "Retour", sf::Vector2f(0.f, 0.f), sf::Vector2f(200.f, 50.f));
 
-    // Place and size all menu items
+    // position
     positionElements(windowSize);
 }
 
 void Menu::positionElements(sf::Vector2f windowSize) {
-    // Determine scaling ratio relative to base height (800)
+    // scale
     float scale = windowSize.y / 800.f;
     if (scale < 0.5f) scale = 0.5f;
 
-    // Apply scaling factor to font character sizes
+    // font size
     m_title.setCharacterSize(static_cast<unsigned int>(50.f * scale));
     m_titleShadow.setCharacterSize(static_cast<unsigned int>(50.f * scale));
     m_rulesText.setCharacterSize(static_cast<unsigned int>(20.f * scale));
 
-    // Center and place Title and its shadow
+    // center title
     sf::FloatRect titleBounds = m_title.getLocalBounds();
     m_title.setOrigin({titleBounds.position.x + titleBounds.size.x / 2.f, titleBounds.position.y + titleBounds.size.y / 2.f});
     m_title.setPosition({windowSize.x / 2.f, windowSize.y * 0.18f});
@@ -51,16 +51,16 @@ void Menu::positionElements(sf::Vector2f windowSize) {
     m_titleShadow.setOrigin(m_title.getOrigin());
     m_titleShadow.setPosition({windowSize.x / 2.f + 4.f * scale, windowSize.y * 0.18f + 4.f * scale});
 
-    // Center and place Rules text
+    // center rules
     sf::FloatRect rulesBounds = m_rulesText.getLocalBounds();
     m_rulesText.setOrigin({rulesBounds.position.x + rulesBounds.size.x / 2.f, rulesBounds.position.y + rulesBounds.size.y / 2.f});
     m_rulesText.setPosition({windowSize.x / 2.f, windowSize.y * 0.42f});
 
-    // Determine scaled dimensions for buttons
+    // button size
     sf::Vector2f btnSize(200.f * scale, 50.f * scale);
     unsigned int btnCharSize = static_cast<unsigned int>(22.f * scale);
 
-    // Apply sizes and positions to button instances
+    // place buttons
     m_playBtn->setSize(btnSize, btnCharSize);
     m_rulesBtn->setSize(btnSize, btnCharSize);
     m_exitBtn->setSize(btnSize, btnCharSize);
@@ -74,20 +74,20 @@ void Menu::positionElements(sf::Vector2f windowSize) {
 
 void Menu::handleEvents(sf::RenderWindow& window) {
     while (const std::optional event = window.pollEvent()) {
-        // Handle window close
+        // close
         if (event->is<sf::Event::Closed>()) {
             m_state = MenuState::Exit;
             window.close();
         }
 
-        // Adjust view boundaries and component layout on window resize
+        // resize
         if (const auto* resized = event->getIf<sf::Event::Resized>()) {
             sf::FloatRect visibleArea({0.f, 0.f}, {static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)});
             window.setView(sf::View(visibleArea));
             positionElements(sf::Vector2f(static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)));
         }
 
-        // Process mouse button clicks using mapped view coordinates
+        // mouse click
         if (const auto* press = event->getIf<sf::Event::MouseButtonPressed>()) {
             if (press->button == sf::Mouse::Button::Left) {
                 sf::Vector2f mappedMousePos = window.mapPixelToCoords(press->position);
@@ -110,7 +110,8 @@ void Menu::handleEvents(sf::RenderWindow& window) {
 }
 
 void Menu::update(sf::Vector2f mousePos, float deltaTime, sf::Vector2f windowSize) {
-    // Update button states depending on current menu state
+
+    // update buttons
     if (m_state == MenuState::MainMenu) {
         m_playBtn->update(mousePos, deltaTime);
         m_rulesBtn->update(mousePos, deltaTime);
@@ -121,10 +122,11 @@ void Menu::update(sf::Vector2f mousePos, float deltaTime, sf::Vector2f windowSiz
 }
 
 void Menu::draw(sf::RenderWindow& window) {
-    // Clear screen to deep blue color
+    
+    // blue background
     window.clear(sf::Color(10, 10, 25));
 
-    // Render active UI elements depending on state
+    // draw by state
     if (m_state == MenuState::MainMenu) {
         window.draw(m_titleShadow);
         window.draw(m_title);

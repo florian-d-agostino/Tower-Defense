@@ -5,9 +5,9 @@
 
 struct Tower {
     sf::Vector2f pos;
-    float range = 150.f;        // Portée de tir (pixels)
-    float fireCooldown = 1.0f;  // Temps entre deux tirs (secondes)
-    float fireTimer = 0.0f;     // Chronomètre de recharge
+    float range = 150.f;
+    float fireCooldown = 1.0f;
+    float fireTimer = 0.0f;
 };
 
 #endif

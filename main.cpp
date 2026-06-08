@@ -5,48 +5,48 @@
 #include "src/Header/GameRenderer.hpp"
 
 int main() {
-    // Initial window dimensions and setup
+    // window setup
     sf::Vector2f windowSize(1200.f, 800.f);
     sf::RenderWindow window(sf::VideoMode({1200, 800}), "Tower Defense");
     window.setFramerateLimit(60);
 
-    // Initialize menu, game manager, game renderer, and clock for frame time calculation
+    // init menu and game
     Menu menu(windowSize);
     GameManager gameManager;
     GameRenderer gameRenderer;
     sf::Clock clock;
 
-    // Main game loop
+    // game loop
     while (window.isOpen()) {
         float deltaTime = clock.restart().asSeconds();
         
-        // Map mouse screen coordinates to virtual view coordinates
+        // mouse pos
         sf::Vector2i mousePosI = sf::Mouse::getPosition(window);
         sf::Vector2f mousePos = window.mapPixelToCoords(mousePosI);
 
-        // Process inputs and window events based on state
+        // input
         if (menu.getState() == MenuState::Playing) {
             gameManager.handleEvents(window, menu);
         } else {
             menu.handleEvents(window);
         }
 
-        // Exit game loop if Exit state is active
+        // quit
         if (menu.getState() == MenuState::Exit) {
             window.close();
             break;
         }
 
-        // Update positions based on state
+        // update
         if (menu.getState() == MenuState::Playing) {
             gameManager.update(deltaTime);
         } else {
-            // Get actual window size dynamically to update menu positions
+            // window size
             sf::Vector2f currentSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
             menu.update(mousePos, deltaTime, currentSize);
         }
 
-        // Render everything based on state
+        // draw
         window.clear();
         if (menu.getState() == MenuState::Playing) {
             gameRenderer.draw(window, gameManager);

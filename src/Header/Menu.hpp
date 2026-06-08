@@ -6,7 +6,9 @@
 #include <memory>
 #include "Button.hpp"
 
-// Represents the screen/views of the game menu
+
+
+// menu state
 enum class MenuState {
     MainMenu,
     RulesMenu,
@@ -20,29 +22,29 @@ private:
     sf::Font m_font;
     sf::Font m_boldFont;
     
-    // UI Text components
+    // text
     sf::Text m_title;
     sf::Text m_titleShadow;
     sf::Text m_rulesText;
 
-    // Interactive buttons
+    // buttons
     std::unique_ptr<Button> m_playBtn;
     std::unique_ptr<Button> m_rulesBtn;
     std::unique_ptr<Button> m_exitBtn;
     std::unique_ptr<Button> m_backBtn;
 
-    // Repositions and scales all components dynamically
+    // place
     void positionElements(sf::Vector2f windowSize);
 
 public:
     Menu(sf::Vector2f windowSize);
 
-    // Event handling, layout update, rendering
+    // methods
     void handleEvents(sf::RenderWindow& window);
     void update(sf::Vector2f mousePos, float deltaTime, sf::Vector2f windowSize);
     void draw(sf::RenderWindow& window);
 
-    // State getters and setters
+    // getters/setters
     MenuState getState() const { return m_state; }
     void setState(MenuState state) { m_state = state; }
 };

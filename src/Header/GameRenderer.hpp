@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-class GameManager; // Forward declaration
+class GameManager; 
 
 class GameRenderer {
 private:
@@ -12,8 +12,10 @@ private:
 public:
     GameRenderer();
 
-    // Renders the entire game view
+
+
+    // draw
     void draw(sf::RenderWindow& window, GameManager& game);
 };
 
-#endif // GAME_RENDERER_HPP
+#endif

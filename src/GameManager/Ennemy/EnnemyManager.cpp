@@ -104,7 +104,6 @@ void EnnemyManager::update(float deltaTime) {
                         cout << "An enemy attacked the base!" << endl;
 
 
-                        // Future hook: GameManager::getInstance().takeDamage(1);
                     }
                 }
             } else {

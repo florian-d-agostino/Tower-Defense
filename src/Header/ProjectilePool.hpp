@@ -11,17 +11,16 @@ private:
     sf::Texture projectileTexture;
 
 public:
-    // Constructeur : initialise la pool avec un certain nombre de projectiles inactifs
+    // constructor
     ProjectilePool(int size);
 
-    // Cherche un projectile inactif dans la pool et renvoie un pointeur vers lui
-    // (Renvoie nullptr si tous les projectiles sont déjà actifs)
+    // get projectile
     Projectile* acquireProjectile();
 
-    // Met à jour la physique et les collisions de tous les projectiles qui sont en train de voler
+    // update all
     void UpdateAll(float deltaTime);
 
-    // Affiche tous les projectiles en vol à l'écran
+    // draw all
     void DrawAll(sf::RenderWindow& window);
 };
 

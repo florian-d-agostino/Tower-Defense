@@ -9,10 +9,10 @@
 #include "Tower.hpp"
 #include "ProjectilePool.hpp"
 
-class Menu; // Forward declaration
-class GameRenderer; // Forward declaration
+class Menu;
+class GameRenderer;
 
-extern class GameManager* g_gameManager; // Pointeur global pour l'accès facile
+extern class GameManager* g_gameManager;
 
 class GameManager {
     friend class GameRenderer;
@@ -26,17 +26,23 @@ private:
     std::string m_mapName;
     std::vector<Tower> m_towers;
     ProjectilePool m_projectilePool;
-    float m_passiveGoldTimer; // Timer pour l'or automatique
+
+    // Timer
+    float m_passiveGoldTimer; 
+
+
 
     bool loadLevel(const std::string& filepath);
 
 public:
     GameManager();
 
-    // Event handling and layout update
+
+
+    // methods
     void handleEvents(sf::RenderWindow& window, Menu& menu);
     void update(float deltaTime);
     void addGold(int amount);
 };
 
-#endif // GAME_MANAGER_HPP
+#endif 
