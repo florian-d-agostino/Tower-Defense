@@ -56,6 +56,6 @@ int main() {
         window.display();
     }
 
-    std::cout << "Fermeture du jeu..." << std::endl;
+    std::cout << "App close." << std::endl;
     return 0;
 }
